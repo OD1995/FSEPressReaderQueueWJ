@@ -2,6 +2,7 @@ import requests
 from MyFunctions import get_df_from_sqlQuery
 import logging
 import time
+from datetime import datetime
 
 while True:
     ## Query PressReaderScrapeQueue to see if any rows are in progress
@@ -21,11 +22,14 @@ while True:
     if inProgressRows == 0:
         ## If not, query PressReaderScrapeQueue for the last added row with no status
         publicationCID = df.loc[0,"PublicationCID"]
-        publicationDate = df.loc[0,"PublicationDate"]
+        publishedDate = datetime.strftime(
+            df.loc[0,"PublishedDate"],
+            "%Y-%m-%d"
+        )
         ## Trigger the function to scrape data for that publication/date combination
         params = {
                 "publicationCID" : publicationCID,
-                "publicationDate" : publicationDate
+                "publishedDate" : publishedDate
             }
         logging.info(f"params: {params}")
         r = requests.get(
